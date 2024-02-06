@@ -53,34 +53,138 @@ class UserController extends Controller
         ], 500);   
         }
     }
-    public function login(Request $request){
-
+    // public function login(Request $request)
+    // {
+    //     $request->validate([
+    //         'email' => 'required|email|exists:users,email',
+    //         'password' => 'required'
+    //     ]);
+    
+    //     // Récupérer l'utilisateur
+    //     $user = User::where('email', $request->email)->first();
+    //     // $user = User::where('password', $request->password)->first();
+    
+    //     // Vérifier le mot de passe
+    //     if ($user && Hash::check($request->password, $user->password)) {
+    //         Auth::login($user);
+    //         // Génération du token pour l'utilisateur
+    //         $token = Str::random(60); // Par exemple, générez un token aléatoire de 60 caractères
+    //         // Enregistrez le token dans la base de données ou faites ce que vous devez faire avec le token
+    
+    //         return response()->json([
+    //             'status code' => 200,
+    //             'status message' => 'Utilisateur connecté', 
+    //             'user' => $user,
+    //             'token' => $token
+    //         ]);
+    //     } else {
+    //         // Si les informations d'identification ne sont pas valides, renvoyer une réponse d'erreur
+    //         return response()->json([
+    //             'status code' => 403,
+    //             'status message' => 'Informations non valides', 
+    //         ]);
+    //     }
+    // }
+    public function login(Request $request)
+    {
         $request->validate([
             'email' => 'required|email|exists:users,email',
-            'password' => 'required|min:6'
+            'password' => 'required',
         ]);
 
-        if(Auth::attempt($request->only(['email', 'password']))){
+        // Récupérer les informations de l'utilisateur
+        $credentials = $request->only('email', 'password');
 
-            $user = auth()->user();
-            // $token = $user->createToken('MY_KEY_BACKEND')->plainTextToken;
-            // Génération du token et mise à jour de l'utilisateur
-            $token = Str::random(30); 
-            $user->$token;
-            // $user->save();
+        // Authentifier l'utilisateur
+        if (Auth::attempt($credentials)) {
+            // L'utilisateur est authentifié avec succès
+            return response()->json([
+                'message' => 'Connexion réussie',
+                'user' => Auth::user(),
+                'token' => Auth::user()->createToken('authToken')->plainTextToken
+            ]);
+        } else {
+            // L'authentification a échoué
+            return response()->json(['message' => 'Identifiants incorrects'], 401);
+        }
+    }
+        
 
+    public function logout(Request $request)
+    {
+        // Récupérer l'utilisateur actuellement authentifié
+        $user = Auth::user();
+
+        if ($user) {
+            // Révoquer tous les tokens d'authentification de l'utilisateur
+            $user->tokens()->delete();
+
+            // Répondre avec un message JSON de succès
             return response()->json([
                 'status code' => 200,
-                'status message' => 'Utilisateur connecté', 
-                'user'=>$user,
-                'token' => $token
+                'status message' => 'Déconnexion réussie', 
             ]);
-        }
-        else{
+        } else {
+            // L'utilisateur n'est pas authentifié, répondre avec un message d'erreur
             return response()->json([
                 'status code' => 403,
-                'status message' => 'Informations non valide', 
+                'status message' => 'Utilisateur non authentifié', 
             ]);
         }
     }
+
+    public function userData()
+    {
+
+        // Récupérer l'utilisateur authentifié
+        $user = Auth::user();
+        if ($user) {
+            // Répondre avec un message JSON de succès
+            return response()->json([
+                'status code' => 200,
+                'status message' => 'Informations utilisateur récupérées avec succès',
+                'user' => $user,
+            ]);
+            
+        }else{
+            return response()->json([
+                'status code' => 404,
+                'status message' => 'Utilisateur non trouvé',
+            ]);
+        }
+    }
+    public function update(Request $request)
+    {
+        // Récupérer l'utilisateur authentifié
+        $user = Auth::user();
+        if ($user) {
+            // Valider les données entrantes
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,'. $user->id,
+            'password' => 'required|string|min:6',
+        ]);
+
+        // Mettre à jour les informations de l'utilisateur
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->password = bcrypt($request->password); // Hacher le mot de passe
+        $user->save();
+
+        // Répondre avec un message JSON de succès
+        return response()->json([
+            'status code' => 200,
+            'status message' => 'Informations utilisateurs mises à jour',
+            'user' => $user,
+        ]);
+        }
+        else{
+            return response()->json([
+                'status code' => 404,
+                'status message' => 'Utilisateur non trouvé',
+            ]);
+        }
+        
+    }
+
 }

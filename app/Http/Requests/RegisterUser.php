@@ -25,9 +25,7 @@ class RegisterUser extends FormRequest
     {
         return [
             
-            'name' => 'required',
-            'email'  => 'required|email|unique:users,email',
-            'password' => 'required',
+            
         ];
     }
     public function failedValidation(validator $validator){
@@ -46,7 +44,6 @@ class RegisterUser extends FormRequest
         'email.required' => 'un email valide doit etre fourni',
         'email.unique' => 'cet email existe deja',
         'password.required' => 'un mot de passe est requis',
-
         ];
     }
 }

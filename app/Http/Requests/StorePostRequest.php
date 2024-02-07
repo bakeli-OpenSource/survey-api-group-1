@@ -5,6 +5,8 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Response;
+use Illuminate\Http\Request;
 class StorePostRequest extends FormRequest
 {
     /**
@@ -24,12 +26,23 @@ class StorePostRequest extends FormRequest
     {
         return [
             'title' => 'required|string',
-            'description' => 'required|string'
+            'description' => 'required|string',
+            'questions' => 'required'
+
+        ];
+    }
+    public function messages(){
+        return[
+        'title.required' => 'un nom doit etre fourni',
+        'description.required' => 'veuillez donner une description',
+        'questions.required' => 'veuillez ajouter vos questions ',
+        
 
         ];
     }
     public function failedValidation(validator $validator){
 
+        
         throw new HttpResponseException(response()->json([
             'success' => false,
             'status code' => 422,
@@ -37,14 +50,9 @@ class StorePostRequest extends FormRequest
             'message' => "err de validation"
     ,
             'errorList' => $validator->errors(),
+            Response::HTTP_UNPROCESSABLE_ENTITY
+
         ]));
     }
-    public function messages(){
-        return[
-        'title.required' => 'un nom doit etre fourni',
-        'description.required' => 'veuillez donnez une description',
-        
-
-        ];
-    }
+    
 }

@@ -1,8 +1,10 @@
 <?php
 use App\Http\Controllers\Api\PostController;
+use App\Http\Controllers\Api\QuestionController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\LinkController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,6 +25,8 @@ Route::middleware('auth:sanctum')->group(function(){
         return $request->user();
     });
     Route::apiResource('survey',PostController::class);
-    
+    Route::apiResource('question', QuestionController::class);
+
+
 });
 

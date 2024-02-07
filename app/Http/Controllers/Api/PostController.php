@@ -10,6 +10,8 @@ use App\Http\Resources\PostResource;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\User;
+use App\Http\Resources\QuestionResource;
+use App\Models\Questionnaire;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -39,18 +41,25 @@ class PostController extends Controller
     {
         
         try{
+            
             $post = new Post();
-
+                
             $post->title = $request->title;
             $post->description = $request->description;
+            $post->questions = json_encode($request->questions);
+    
             $post->user_id = auth()->user()->id;
+          
             $post->save();
-            
-
+        
             return response()->json([
                 'status code' => 200,
                 'status message' => 'les sondages ont ete ajoutes',
                 'data'=> $post,
+                'links'=> url("api/survey/{$post->id}")
+                // 'links' => [
+                //     'self' => route('questions.link', ['data' => $questionId]),
+                // ],
 
             ]);
        }
@@ -63,9 +72,21 @@ class PostController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Post $post)
+    public function show()
     {
-        //
+        try {
+            $post= Post::where('user_id', auth()->user()->id)->latest();
+
+            return response()->json([
+                'code'=>200,
+               'message'=>'ok',
+               'data'=>json_decode($post->questions)
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json($e);
+            
+        }
     }
 
     /**

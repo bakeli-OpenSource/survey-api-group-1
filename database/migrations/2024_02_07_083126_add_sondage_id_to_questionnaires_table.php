@@ -11,12 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('posts', function (Blueprint $table) {
-            $table->id();
-            $table->string('title');
-            $table->string('description');
-            $table->json('questions');
-            $table->timestamps();
+        Schema::table('questionnaires', function (Blueprint $table) {
+            $table->foreignId('posts_id')->constrained('posts');
+            
         });
     }
 
@@ -25,6 +22,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('posts');
+        Schema::table('questionnaires', function (Blueprint $table) {
+            $table->dropForeign(['posts_id']);
+            $table->dropColumn('posts_id');
+        });
     }
 };

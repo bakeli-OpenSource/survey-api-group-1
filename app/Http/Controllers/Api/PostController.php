@@ -72,7 +72,7 @@ class PostController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show()
+    public function show(Post $post)
     {
         try {
             $post= Post::where('user_id', auth()->user()->id)->latest();

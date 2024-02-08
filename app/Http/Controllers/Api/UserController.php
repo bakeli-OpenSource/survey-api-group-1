@@ -161,7 +161,7 @@ class UserController extends Controller
             // Valider les données entrantes
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,'. $user->id,
+            'email' => 'required|email,'. $user->id,
             'password' => 'required|string|min:6',
         ]);
 

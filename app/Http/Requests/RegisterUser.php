@@ -35,7 +35,7 @@ class RegisterUser extends FormRequest
         throw new HttpResponseException(response()->json([
             'success' => false,
             'status code' => 422,
-            'error' => true,
+            'errors' => true,
             'message' => 'erreur de validation',
             'errorList' => $validator->errors(),
         ]));

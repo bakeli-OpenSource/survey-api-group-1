@@ -16,13 +16,13 @@ use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
-    public function register(RegisterUser $request){
+    public function register(Request $request){
 
-        // $request->validate([
-        //     'name' => 'required',
-        //     'email' => 'required|email|unique:users,email',
-        //     'password' => 'required|min:6',
-        // ]);
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:6',
+        ]);
 
         try{
             $user = new User();
@@ -44,13 +44,13 @@ class UserController extends Controller
                 'status message' => 'Erreur de validation',
                 'errors' => $e->errors(),
             ], 422);
-        // }catch(Exception $e){
-        //     // Autres erreurs
-        // return response()->json([
-        //     'status code' => 500,
-        //     'status message' => 'Erreur lors de l\'enregistrement de l\'utilisateur',
-        //     'error' => $e->getMessage(),
-        // ], 500);   
+        }catch(Exception $e){
+            //Autres erreurs
+        return response()->json([
+            'status code' => 500,
+            'status message' => 'Erreur lors de l\'enregistrement de l\'utilisateur',
+            'error' => $e->getMessage(),
+        ], 500);   
         }
     }
     // public function login(Request $request)

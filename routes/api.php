@@ -2,7 +2,9 @@
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\QuestionController;
 use App\Http\Controllers\Api\UserController;
+use App\Mail\SurveyMail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\LinkController;
 
@@ -33,6 +35,10 @@ Route::middleware('auth:sanctum')->group(function(){
     // Route::apiResource('question', QuestionController::class);
 
     }); 
+    Route::get('email', function () {
+        Mail::to('zalou2016@gmail.com')
+        ->send(new SurveyMail());
+     });
     
 
 

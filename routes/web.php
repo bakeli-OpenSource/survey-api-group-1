@@ -1,5 +1,7 @@
 <?php
 
+use App\Mail\SurveyMail;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +15,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+// Route::get('/', function () {
+//    Mail::to('gueyekhoudia0096@gmail.com')
+//    ->send(new SurveyMail());
+// });

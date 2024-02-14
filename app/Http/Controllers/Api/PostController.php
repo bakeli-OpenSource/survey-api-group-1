@@ -1,8 +1,10 @@
 <?php
 
 namespace App\Http\Controllers\Api;
+use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Http\Response;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\RegisterUser;
@@ -17,14 +19,26 @@ use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        $posts = Post::all();
-        return PostResource::collection($posts);
-    }
+   
+        public function index()
+        {
+            // Récupérez l'utilisateur actuellement authentifié
+            $user = Auth::user();
+    
+            // Vérifiez si l'utilisateur est authentifié
+            if ($user) {
+                // Récupérez les publications (sondages) de l'utilisateur connecté
+                $posts = Post::where('user_id', $user->id)->get();
+    
+                // Retournez les sondages en tant que ressource JSON
+                return PostResource::collection($posts);
+            } else {
+                // Si l'utilisateur n'est pas authentifié, renvoyez une réponse appropriée
+                return response()->json(['message' => 'Utilisateur non authentifié'], 401);
+            }
+        }
+    
+    
 
     /**
      * Show the form for creating a new resource.
@@ -116,4 +130,8 @@ class PostController extends Controller
 
         return response(null, 204);
     }
+
+    // public function email(){
+    //     $email = 
+    // }
 }

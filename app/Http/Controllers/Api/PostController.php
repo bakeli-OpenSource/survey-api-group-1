@@ -28,7 +28,7 @@ class PostController extends Controller
             // Vérifiez si l'utilisateur est authentifié
             if ($user) {
                 // Récupérez les publications (sondages) de l'utilisateur connecté
-                $posts = Post::where('user_id', $user->id)->get();
+                $posts = Post::where('user_id', $user->id)->latest()->get();
     
                 // Retournez les sondages en tant que ressource JSON
                 return PostResource::collection($posts);

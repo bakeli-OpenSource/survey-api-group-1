@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Response;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\RegisterUser;
 use App\Http\Resources\PostResource;
@@ -22,9 +23,48 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::all();
-        return PostResource::collection($posts);
+        // Récupérez l'utilisateur actuellement authentifié
+        $user = Auth::user();
+
+        // Vérifiez si l'utilisateur est authentifié
+        if ($user) {
+            // Récupérez les publications (sondages) de l'utilisateur connecté
+            $posts = Post::where('user_id', $user->id)->latest()->get();
+        
+
+            // Retournez les sondages et le nombre total de posts de l'utilisateur en tant que ressource JSON
+            return PostResource::collection($posts);
+
+        } else {
+            // Si l'utilisateur n'est pas authentifié, renvoyez une réponse appropriée
+            return response()->json(['message' => 'Utilisateur non authentifié'], 401);
+        }
     }
+
+
+
+    public function count()
+    {
+        // Récupérez l'utilisateur actuellement authentifié
+        $user = Auth::user();
+
+        // Vérifiez si l'utilisateur est authentifié
+        if ($user) {
+        
+            //  Récupère le nombre de posts de l'utilisateur
+            $totalPosts = $user->posts()->count();
+
+            // Retournez les sondages et le nombre total de posts de l'utilisateur en tant que ressource JSON
+            return response()->json([
+                'totalPosts' => $totalPosts
+            ]);
+
+        } else {
+            // Si l'utilisateur n'est pas authentifié, renvoyez une réponse appropriée
+            return response()->json(['message' => 'Pas de sondages créés'], 404);
+        }
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -69,25 +109,37 @@ class PostController extends Controller
         
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Post $post)
+    public function show($id)
     {
         try {
-            $post= Post::where('user_id', auth()->user()->id)->latest();
+            // Récupérez l'utilisateur actuellement authentifié
+            $user = Auth::user();
 
-            return response()->json([
-                'code'=>200,
-               'message'=>'ok',
-               'data'=>json_decode($post->questions)
-            ]);
+            // Vérifiez si l'utilisateur est authentifié
+            if ($user) {
+                // Récupérez le post spécifique de l'utilisateur connecté en fonction de son ID
+                $post = Post::where('id', $id)->where('user_id', $user->id)->first();
 
+                // Vérifiez si le post existe
+                if ($post) {
+                    // Retournez le post en tant que ressource JSON
+                    return PostResource::collection($post);
+                } else {
+                    // Si le post n'est pas trouvé, retournez une réponse avec un code 404
+                    return response()->json(['message' => 'Post non trouvé'], 404);
+                }
+            } else {
+                // Si l'utilisateur n'est pas authentifié, renvoyez une réponse avec un code 401
+                return response()->json(['message' => 'Utilisateur non authentifié'], 401);
+            }
         } catch (Exception $e) {
-            return response()->json($e);
-            
+            // En cas d'erreur interne du serveur, renvoyez une réponse avec un code 500 et un message d'erreur
+            return response()->json(['message' => 'Erreur interne du serveur', 'error' => $e->getMessage()], 500);
         }
     }
+
+    
+
 
     /**
      * Show the form for editing the specified resource.

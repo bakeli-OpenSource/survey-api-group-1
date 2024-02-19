@@ -18,6 +18,14 @@ return new class extends Migration
             $table->json('questions');
             $table->timestamps();
         });
+
+        Schema::create('responses', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('post_id')->constrained()->onDelete('cascade');
+            $table->string('participant_name');
+            $table->json('participant_responses');
+            $table->timestamps();
+        });
     }
 
     /**
@@ -26,5 +34,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('posts');
+        Schema::dropIfExists('responses');
     }
 };

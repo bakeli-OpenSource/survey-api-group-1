@@ -1,6 +1,6 @@
 <?php
 use App\Http\Controllers\Api\PostController;
-use App\Http\Controllers\Api\QuestionController;
+use App\Http\Controllers\Api\ParticipantController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +19,8 @@ use App\Http\Controllers\Api\LinkController;
 
     Route::post('register',[UserController::class, 'register']);
     Route::post('login',[UserController::class, 'login']);
+    // Route::get('survey/{id}',[PostController::class, 'show']);
+    Route::post('responses',[ParticipantController::class, 'response']);
 
 Route::middleware('auth:sanctum')->group(function(){
     Route::get('/user', function (Request $request) {
@@ -29,10 +31,12 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('userData',[UserController::class, 'userData']);
     Route::put('update',[UserController::class, 'update']);
 
-    Route::apiResource('survey',PostController::class);
+    // Route::apiResource('survey',PostController::class);
+    Route::get('survey/count',[PostController::class, 'count']);
+    Route::get('survey',[PostController::class, 'index']);
+    Route::post('survey',[PostController::class, 'store']);
     // Route::apiResource('question', QuestionController::class);
-
-    }); 
+}); 
     
 
 

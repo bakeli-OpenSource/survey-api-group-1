@@ -1,10 +1,11 @@
 <?php
 
 namespace App\Http\Controllers\Api;
+use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Http\Response;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\RegisterUser;
 use App\Http\Resources\PostResource;
@@ -168,4 +169,8 @@ class PostController extends Controller
 
         return response(null, 204);
     }
+
+    // public function email(){
+    //     $email = 
+    // }
 }
